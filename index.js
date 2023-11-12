@@ -46,12 +46,18 @@ async function run() {
       const result = await reviewCollection.find().toArray();
       res.send(result);
     })
-    app.get('/test',(req,res)=>{
-      
-      res.send(user);
-    })
+    
+    // cart collection apis
 
-    // cart collection api
+    app.get('/carts',async(req,res)=>{
+      const email = req.query.email;
+      if(!email){
+        return [];
+      }
+      const query = {email: email};
+      const result = await cartCollection.find(query).toArray();
+      res.send(result);
+    })
 
     app.post('/carts',async(req,res)=>{
       const item = req.body;
@@ -59,13 +65,7 @@ async function run() {
       const result = await cartCollection.insertOne(item);
       res.send(result);
     })
-    app.post('/test',async(req,res)=>{
-      console.log("post api hiting");
-      const item = req.body;
-      console.log("geting ing",item);
-      
-    })
-
+    
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
