@@ -7,7 +7,12 @@ const port = process.env.PORT || 5000;
 // middleware
 
 app.use(cors());
-app.use(express());
+app.use(express.json());
+
+const user = [
+  {id: 1, name: 'sabana'},
+  {id: 2, name: 'sabnur'},
+]
 
 
 // db connection
@@ -31,6 +36,7 @@ async function run() {
     const menuCollection = client.db("eRestaurant").collection("menu");
     const reviewCollection = client.db("eRestaurant").collection("review");
     const cartCollection = client.db("eRestaurant").collection("carts");
+    const testCollection = client.db("eRestaurant").collection("test");
 
     app.get('/menu',async(req,res)=>{
       const result = await menuCollection.find().toArray();
@@ -40,14 +46,24 @@ async function run() {
       const result = await reviewCollection.find().toArray();
       res.send(result);
     })
+    app.get('/test',(req,res)=>{
+      
+      res.send(user);
+    })
 
     // cart collection api
 
     app.post('/carts',async(req,res)=>{
       const item = req.body;
-      console.log(item);
+      console.log("geting ing",item);
       const result = await cartCollection.insertOne(item);
       res.send(result);
+    })
+    app.post('/test',async(req,res)=>{
+      console.log("post api hiting");
+      const item = req.body;
+      console.log("geting ing",item);
+      
     })
 
     // Send a ping to confirm a successful connection
