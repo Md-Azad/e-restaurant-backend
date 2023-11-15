@@ -10,10 +10,21 @@ const port = process.env.PORT || 5000;
 app.use(cors());
 app.use(express.json());
 
-const user = [
-  {id: 1, name: 'sabana'},
-  {id: 2, name: 'sabnur'},
-]
+const verifyJWT = (req,res,next) =>{
+  const authorization = req.headers.authorization;
+  if(!authorization){
+    return res.status(401).send({error: true, message: 'Unauthorized access'});
+  }
+  // bearer token
+  const token = authorization.split(' ')[1];
+  jwt.verify(token,process.env.ACCESS_TOKEN_SECRET,(err,decoded) =>{
+    if(err){
+      return res.status(401).send({error: true, message: 'Unauthorized access'})
+    }
+    req.decoded = decoded;
+    next();
+  })
+}
 
 
 // db connection
@@ -93,10 +104,14 @@ async function run() {
     
     // cart collection apis
 
-    app.get('/carts',async(req,res)=>{
+    app.get('/carts', verifyJWT, async(req,res)=>{
       const email = req.query.email;
       if(!email){
         return [];
+      }
+      const decodedEmail = req.decoded.email;
+      if(email !== decodedEmail){
+        return res.status(403).send({error: true, message: 'Forbidden access'})
       }
       const query = {email: email};
       const result = await cartCollection.find(query).toArray();
