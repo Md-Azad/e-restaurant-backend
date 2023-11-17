@@ -59,8 +59,23 @@ async function run() {
       res.send({token})
     })
 
+    const veryfyAdmin = async (req,res,next) =>{
+      const email = req.decoded.email;
+      const query = {email: email}
+      const user = await usersCollection.findOne(query);
+      if(user?.role !== 'admin'){
+        return res.status(403).send({error: true, message: 'forbidden message'});
+      }
+      next();
+    }
+
+    /**
+     * 1.do not show secure linkd to those who should not see the links
+     * 2. use jwt token: verifyJWT
+     * 3.use veryfyAdmin middleware
+     */
     // User related apis
-    app.get('/users', async(req,res)=>{
+    app.get('/users',verifyJWT, veryfyAdmin, async(req,res)=>{
       const result = await usersCollection.find().toArray();
       res.send(result);
     })
