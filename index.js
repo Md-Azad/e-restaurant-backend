@@ -132,6 +132,13 @@ async function run() {
       res.send(result);
     })
 
+    app.delete('/menu/:id', verifyJWT,veryfyAdmin, async(req,res)=>{
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)}
+      const result = await menuCollection.deleteOne(filter);
+      res.send(result);
+    })
+
     // Review related apis
     app.get('/review',async(req,res)=>{
       const result = await reviewCollection.find().toArray();
