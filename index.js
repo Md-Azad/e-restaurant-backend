@@ -3,6 +3,7 @@ const app = express();
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+const stripe = require("stripe")(process.end.Online_payment_secret_key);
 const port = process.env.PORT || 5000;
 
 // middleware
@@ -176,6 +177,10 @@ async function run() {
       const result = await cartCollection.deleteOne(query);
       res.send(result);
     })
+
+    // stripe payment
+
+
     
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
