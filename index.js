@@ -3,11 +3,10 @@ const app = express();
 require('dotenv').config();
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
-const stripe = require("stripe")(process.end.Online_payment_secret_key);
+const stripe = require("stripe")(process.env.Online_payment_secret_key);
 const port = process.env.PORT || 5000;
 
-// middleware
-
+// middlewares
 app.use(cors());
 app.use(express.json());
 
@@ -50,7 +49,9 @@ async function run() {
     const menuCollection = client.db("eRestaurant").collection("menu");
     const reviewCollection = client.db("eRestaurant").collection("review");
     const cartCollection = client.db("eRestaurant").collection("carts");
+    const paymentCollection = client.db("eRestaurant").collection("payments");
     const testCollection = client.db("eRestaurant").collection("test");
+    
 
     // jWT token
 
@@ -178,7 +179,30 @@ async function run() {
       res.send(result);
     })
 
-    // stripe payment
+    // Online payment api
+
+    app.post('/create-payment-intent', verifyJWT, async(req,res)=>{
+      const {price} = req.body;
+      const amount = price*100;
+      // console.log(price,amount);
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency:'eur',
+        payment_method_types: ['card']
+
+      })
+      res.send({
+        clientSecret: paymentIntent.client_secret
+      })
+    })
+
+    //payment related apis
+
+    app.post('/payment',verifyJWT,async(req,res)=>{
+      const payment = req.body;
+      const result = await paymentCollection.insertOne(payment);
+      res.send(result);
+    })
 
 
     
