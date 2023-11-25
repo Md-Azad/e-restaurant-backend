@@ -257,6 +257,10 @@ app.get("/", (req, res) => {
   res.send("boss is running");
 });
 
+app.get("/api-azad", (req, res) => {
+  res.json({dhon:'bal'})
+});
+
 app.listen(port, () => {
   console.log(`the app is running of port: ${port}`);
 });
