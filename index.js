@@ -130,7 +130,7 @@ async function run() {
     // Menu related apis
     app.get("/menu", async (req, res) => {
       const result = await menuCollection.find().toArray();
-      res.send(result);
+      res.json(result);
     });
 
     app.post("/menu", verifyJWT, veryfyAdmin, async (req, res) => {
